@@ -24,6 +24,8 @@ struct Pong {
     ai: Player,
     /// The score of the player
     score: u32,
+    /// The score rect pos
+    scores_pos: Vec2<f32>,
     /// The game time
     time: f32,
 }
@@ -48,6 +50,7 @@ impl Game for Pong {
             ai: Player { paddle_pos: 25.0 },
             score: 0,
             time: 0.0,
+            scores_pos: Vec2::new(0.0, 0.0),
         }
     }
 
@@ -76,7 +79,7 @@ impl Game for Pong {
         );
 
         // Set up the rectangles for the ball and paddles
-        let ball_rect = Rect::new(self.ball_pos.x, self.ball_pos.y, 10.0, 10.0);
+        let ball_rect = Rect::new(self.ball_pos.x, self.ball_pos.y, 7.0, 7.0);
 
         let player_paddle_rect = Rect::new(25.0, self.player.paddle_pos, 10.0, 50.0);
 
@@ -86,6 +89,9 @@ impl Game for Pong {
             10.0,
             50.0,
         );
+
+        // Set up the rectangles for the score
+        let score_rect = Rect::new(0.0, 0.0, self.score as f32, 5.0);
 
         // Update the AI's paddle
         if self.ball_pos.y > self.ai.paddle_pos + 25.0 {
@@ -108,6 +114,7 @@ impl Game for Pong {
         if ball_rect.collides_with_rect(player_paddle_rect) && self.ball_vel.x < 0.0 {
             self.ball_vel.x = self.ball_vel.x.abs();
             self.ball_vel.y = (self.ball_pos.y - player_paddle_rect.center().y) * 4.0;
+            self.score += 5;
         }
 
         // Check if the ball has hit the right paddle and the velocity is going
@@ -145,7 +152,8 @@ impl Game for Pong {
         );
 
         // Draw the ball
-        console.graphics.draw_rect(ball_rect, 0xFFFFFF, true);
+        // console.graphics.draw_rect(ball_rect, 0xFFFFFF, true);
+        console.graphics.draw_circle(center, radius, color)
 
         // Draw the player's paddle
         console
@@ -156,6 +164,7 @@ impl Game for Pong {
         console.graphics.draw_rect(ai_paddle_rect, 0xFF0000, false);
 
         // Draw the score
+        console.graphics.draw_rect(score_rect, 0xFFF000, true);
     }
 }
 
